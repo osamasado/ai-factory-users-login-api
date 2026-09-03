@@ -1,3 +1,53 @@
+# The Login-History Line
+
+Ask one long AI chat session to "always write a failing test first," and it usually will —
+"usually" isn't the same as "always." The login-history feature in this repo was instead built by
+three separate, fresh Claude Code sessions, run one after another. Each one started with **zero
+memory** of the others; the only thing that passed between them was a file written to disk.
+
+```mermaid
+flowchart LR
+    A["<b>Stage 1 · Refine</b><br/>fresh session, no shared context<br/>reads: live code, via sub-agents"]
+    B["<b>Stage 2 · Plan</b><br/>fresh session, no shared context<br/>reads: refinement.md only"]
+    C["<b>Stage 3 · Implement</b><br/>fresh session, no shared context<br/>reads: plan.md only"]
+    D(["Verified<br/>by me, manually"])
+
+    A -- "writes: refinement.md" --> B
+    B -- "writes: plan.md" --> C
+    C -. "manual check, same session" .-> D
+```
+
+**What each stage actually produced:**
+
+| Stage | Found / decided / produced |
+|---|---|
+| 1 — Refine | `AuthService` and `UsersService` kept two disconnected in-memory user stores — a login recorded in one wouldn't be visible to the other. |
+| 2 — Plan | Decided to unify on `UsersService` as the single store, skip an auth guard (consistent with every other `:id` route), and wrote 7 TDD acceptance criteria. |
+| 3 — Implement | 13/15 unit tests, 4/4 e2e passing at handoff (2 failures were pre-existing, unrelated bugs — fixed separately afterward, now 15/15). |
+
+**Where the guarantee is thinner:** the isolation between stages is real — a fresh session
+structurally cannot see context it wasn't given. Whether each stage *did a good job* is a separate,
+still-probabilistic question. Nothing here forced Stage 3 to actually run the tests it wrote; this
+run is trustworthy because the full suite was independently re-run afterward and matched. That's a
+manual check, not a hook — this project has no hook wired up yet.
+
+**What's left in the repo from this run:**
+
+```
+users-api/
+├─ .claude/skills/
+│  ├─ refine-feature/SKILL.md
+│  ├─ plan-tdd/SKILL.md
+│  └─ implement-tdd/SKILL.md
+└─ plan/
+   ├─ login-history-refinement.md
+   └─ login-history-plan.md
+```
+
+See [`CLAUDE.md`](./CLAUDE.md) — this pipeline is now the default for new feature work in this project.
+
+---
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
