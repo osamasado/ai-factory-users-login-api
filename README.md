@@ -5,6 +5,8 @@ Ask one long AI chat session to "always write a failing test first," and it usua
 three separate, fresh Claude Code sessions, run one after another. Each one started with **zero
 memory** of the others; the only thing that passed between them was a file written to disk.
 
+![The file moving through Refine, Plan, and Implement, each a fresh session, ending in an independently verified checkmark](./docs/login-history-line-loop.gif)
+
 ```mermaid
 flowchart LR
     A["<b>Stage 1 · Refine</b><br/>fresh session, no shared context<br/>reads: live code, via sub-agents"]
