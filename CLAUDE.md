@@ -1,6 +1,7 @@
 # users-api
 
-NestJS user-management API: register/login (JWT), user CRUD, role-guarded admin route, login history.
+NestJS user-management API: register/login (JWT), user CRUD, role-guarded admin route, login history,
+self-profile lookup (`GET /users/me`).
 Everything is in-memory (`UsersService`) — Prisma is scaffolded but not wired up. Tests: `npm test`
 (Jest, unit) and `npm run test:e2e` (supertest, e2e).
 

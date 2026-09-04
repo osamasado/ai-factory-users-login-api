@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -9,20 +9,27 @@ import { Role } from '../users/interfaces/user.interface';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 
-
 @Controller('users')
 export class UsersController {
-    constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) {}
 
-    @Post()
-    createUser(@Body() userData: CreateUserDto) {
-        return this.usersService.create(userData);
-    }
+  @Post()
+  createUser(@Body() userData: CreateUserDto) {
+    return this.usersService.create(userData);
+  }
 
-    // @UseGuards(JwtAuthGuard)
-    @Get()
-    getAllUsers() {
-        return this.usersService.findAll();
+  // @UseGuards(JwtAuthGuard)
+  @Get()
+  getAllUsers() {
+    return this.usersService.findAll();
+  }
+
+    @UseGuards(JwtAuthGuard)
+    @Get('me')
+    getMe(@Request() req) {
+        const user = this.usersService.findOne(req.user.userId);
+        const { password, ...profile } = user;
+        return profile;
     }
 
     @Get(':id')

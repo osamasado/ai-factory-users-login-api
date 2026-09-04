@@ -1,4 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { NotFoundException } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 
@@ -30,6 +31,14 @@ describe('UsersController', () => {
       const user = usersService.create({ name: 'Gus', email: 'gus@example.com', password: 'password123' });
       usersService.recordLogin(user.id);
       expect(controller.getLoginHistory(user.id)).toHaveLength(1);
+    });
+  });
+
+  describe('getMe', () => {
+    it('throws NotFoundException when the JWT user id does not exist', () => {
+      expect(() =>
+        controller.getMe({ user: { userId: 'nonexistent-id' } } as any),
+      ).toThrow(NotFoundException);
     });
   });
 });
